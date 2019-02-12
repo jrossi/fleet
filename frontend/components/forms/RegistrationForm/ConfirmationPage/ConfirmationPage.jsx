@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import Button from 'components/buttons/Button';
@@ -67,7 +68,7 @@ class ConfirmationPage extends Component {
                 <td>{orgName}</td>
               </tr>
               <tr>
-                <th>Kolide URL:</th>
+                <th>Fleet URL:</th>
                 <td><span className={`${baseClass}__table-url`} title={kolideWebAddress}>{kolideWebAddress}</span></td>
               </tr>
             </tbody>
@@ -85,4 +86,3 @@ class ConfirmationPage extends Component {
 }
 
 export default ConfirmationPage;
-

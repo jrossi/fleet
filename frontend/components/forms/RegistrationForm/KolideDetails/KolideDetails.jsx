@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Form from 'components/forms/Form';
 import formFieldInterface from 'interfaces/form_field';
@@ -28,7 +29,7 @@ class KolideDetails extends Component {
         <div className="registration-fields">
           <InputFieldWithIcon
             {...fields.kolide_server_url}
-            placeholder="Kolide Web Address"
+            placeholder="Fleet Web Address"
             tabIndex={tabIndex}
             hint={['Don’t include ', <code key="hint">/v1</code>, ' or any other path']}
           />

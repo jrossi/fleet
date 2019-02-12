@@ -1,8 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import FileSaver from 'file-saver';
-import { clone, filter, includes, isArray, isEqual, merge } from 'lodash';
+import { clone, filter, includes, isEqual, merge } from 'lodash';
 import moment from 'moment';
 import { push } from 'react-router-redux';
 
@@ -48,6 +49,7 @@ export class QueryPage extends Component {
       base: PropTypes.string,
     }),
     hostIDs: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
+    hostUUIDs: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
     isSmallNav: PropTypes.bool.isRequired,
     loadingQueries: PropTypes.bool.isRequired,
     location: PropTypes.shape({
@@ -83,9 +85,9 @@ export class QueryPage extends Component {
   }
 
   componentWillMount () {
-    const { dispatch, hostIDs, selectedHosts, selectedTargets } = this.props;
+    const { dispatch, hostIDs, hostUUIDs, selectedHosts, selectedTargets } = this.props;
 
-    if (hostIDs) {
+    if (((hostIDs && hostIDs.length) || (hostUUIDs && hostUUIDs.length)) > 0) {
       dispatch(hostActions.loadAll());
     }
 
@@ -191,7 +193,8 @@ export class QueryPage extends Component {
     return false;
   }
 
-  onRunQuery = debounce((queryText) => {
+  onRunQuery = debounce(() => {
+    const { queryText } = this.state;
     const { dispatch, selectedTargets } = this.props;
     const { error } = validateQuery(queryText);
 
@@ -445,7 +448,6 @@ export class QueryPage extends Component {
       campaign,
       queryIsRunning,
       queryResultsToggle,
-      queryText,
       runQueryMilliseconds,
     } = this.state;
     const { onExportQueryResults, onToggleQueryFullScreen, onRunQuery, onStopQuery, onTargetSelect } = this;
@@ -472,7 +474,6 @@ export class QueryPage extends Component {
           onRunQuery={onRunQuery}
           onStopQuery={onStopQuery}
           onTargetSelect={onTargetSelect}
-          query={queryText}
           queryIsRunning={queryIsRunning}
           queryTimerMilliseconds={runQueryMilliseconds}
         />
@@ -482,7 +483,7 @@ export class QueryPage extends Component {
 
   renderTargetsInput = () => {
     const { onFetchTargets, onRunQuery, onStopQuery, onTargetSelect } = this;
-    const { campaign, queryIsRunning, queryText, targetsCount, targetsError, runQueryMilliseconds } = this.state;
+    const { campaign, queryIsRunning, targetsCount, targetsError, runQueryMilliseconds } = this.state;
     const { selectedTargets } = this.props;
 
     return (
@@ -493,7 +494,6 @@ export class QueryPage extends Component {
         onRunQuery={onRunQuery}
         onStopQuery={onStopQuery}
         onTargetSelect={onTargetSelect}
-        query={queryText}
         queryIsRunning={queryIsRunning}
         selectedTargets={selectedTargets}
         targetsCount={targetsCount}
@@ -567,24 +567,25 @@ const mapStateToProps = (state, ownProps) => {
   const queryStub = { description: '', name: '', query: queryText };
   const query = reduxQuery || queryStub;
   const { selectedTargets } = state.components.QueryPages;
-  const { host_ids: hostIDs } = ownProps.location.query;
+  const { host_ids: hostIDs, host_uuids: hostUUIDs } = ownProps.location.query;
   const { isSmallNav } = state.app;
   const title = queryID ? 'Edit Query' : 'New Query';
   let selectedHosts = [];
 
-  // hostIDs are URL params so they are strings
-  if (hostIDs && !queryID) {
-    const hostFilter = isArray(hostIDs)
-      ? h => includes(hostIDs, String(h.id))
-      : { id: Number(hostIDs) };
-
+  if (!queryID && ((hostIDs && hostIDs.length) || (hostUUIDs && hostUUIDs.length)) > 0) {
+    const hostIDsArr = Array.isArray(hostIDs) ? hostIDs : [hostIDs];
+    const hostUUIDsArr = Array.isArray(hostUUIDs) ? hostUUIDs : [hostUUIDs];
     const { entities: hosts } = stateEntities.get('hosts');
+    // hostIDs are URL params so they are strings and comparison with ints may
+    // need conversion.
+    const hostFilter = h => includes(hostIDsArr, String(h.id)) || includes(hostUUIDsArr, String(h.uuid));
     selectedHosts = filter(hosts, hostFilter);
   }
 
   return {
     errors,
     hostIDs,
+    hostUUIDs,
     isSmallNav,
     loadingQueries,
     query,

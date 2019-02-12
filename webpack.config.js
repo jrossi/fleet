@@ -15,7 +15,7 @@ var plugins = [
     template: 'frontend/templates/react.ejs'
   }),
   new WebpackNotifierPlugin({
-    title: "Kolide",
+    title: "Fleet",
     contentImage: path.resolve("./assets/images/kolide-logo.svg"),
     excludeWarnings: true
   })
@@ -64,6 +64,7 @@ var config  = {
         exclude: /node_modules/,
         use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: [
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
           {
             loader: 'sass-loader',
             options: {
@@ -76,7 +77,7 @@ var config  = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })
+        use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'postcss-loader'] })
       },
       {
         test: /\.jsx?$/,

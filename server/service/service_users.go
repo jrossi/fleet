@@ -92,14 +92,6 @@ func (svc service) ModifyUser(ctx context.Context, userID uint, p kolide.UserPay
 
 	// the method assumes that the correct authorization
 	// has been validated higher up the stack
-	if p.Admin != nil {
-		user.Admin = *p.Admin
-	}
-
-	if p.Enabled != nil {
-		user.Enabled = *p.Enabled
-	}
-
 	if p.Username != nil {
 		user.Username = *p.Username
 	}
@@ -157,7 +149,7 @@ func (svc service) modifyEmailAddress(ctx context.Context, user *kolide.User, em
 		return err
 	}
 	changeEmail := kolide.Email{
-		Subject: "Confirm Kolide Email Change",
+		Subject: "Confirm Fleet Email Change",
 		To:      []string{email},
 		Config:  config,
 		Mailer: &kolide.ChangeEmailMailer{
@@ -358,7 +350,7 @@ func (svc service) RequestPasswordReset(ctx context.Context, email string) error
 	}
 
 	resetEmail := kolide.Email{
-		Subject: "Reset Your Kolide Password",
+		Subject: "Reset Your Fleet Password",
 		To:      []string{user.Email},
 		Config:  config,
 		Mailer: &kolide.PasswordResetMailer{

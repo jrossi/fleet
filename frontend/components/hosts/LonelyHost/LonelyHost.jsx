@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { noop } from 'lodash';
 
 import Button from 'components/buttons/Button';
@@ -19,7 +20,7 @@ const LonelyHost = ({ onClick = noop }) => {
 
       <div className={`${baseClass}__content`}>
         <h1>It&#39;s Kinda Lonely In Here...</h1>
-        <h2>Get started adding hosts to Kolide.</h2>
+        <h2>Get started adding hosts to Fleet.</h2>
         <p>This can be done individually or across your entire fleet.</p>
         <img src={swoop} className={`${baseClass}__swoop`} role="presentation" />
       </div>

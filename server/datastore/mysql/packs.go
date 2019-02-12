@@ -74,6 +74,10 @@ func applyPackSpec(tx *sqlx.Tx, spec *kolide.PackSpec) error {
 
 	// Insert new scheduled queries for pack
 	for _, q := range spec.Queries {
+		// Default to query name if scheduled query name is not specified.
+		if q.Name == "" {
+			q.Name = q.QueryName
+		}
 		query = `
 			INSERT INTO scheduled_queries (
 				pack_id, query_name, name, description, ` + "`interval`" + `,
@@ -445,8 +449,9 @@ func (d *Datastore) ListLabelsForPack(pid uint) ([]*kolide.Label, error) {
 
 func (d *Datastore) ListPacksForHost(hid uint) ([]*kolide.Pack, error) {
 	query := `
-		SELECT DISTINCT p.*
-		FROM packs p
+		SELECT DISTINCT packs.*
+		FROM
+		((SELECT p.* FROM packs p
 		JOIN pack_targets pt
 		JOIN label_query_executions lqe
 		ON (
@@ -455,11 +460,17 @@ func (d *Datastore) ListPacksForHost(hid uint) ([]*kolide.Pack, error) {
 		  AND pt.type = ?
 		  AND lqe.matches
 		)
-		WHERE lqe.host_id = ? AND NOT p.disabled
+		WHERE lqe.host_id = ? AND NOT p.disabled)
+		UNION ALL
+		(SELECT p.*
+		FROM packs p
+		JOIN pack_targets pt
+		ON (p.id = pt.pack_id AND pt.type = ? AND pt.target_id = ?))
+		) packs
 	`
 
 	packs := []*kolide.Pack{}
-	if err := d.db.Select(&packs, query, kolide.TargetLabel, hid); err != nil && err != sql.ErrNoRows {
+	if err := d.db.Select(&packs, query, kolide.TargetLabel, hid, kolide.TargetHost, hid); err != nil && err != sql.ErrNoRows {
 		return nil, errors.Wrap(err, "listing hosts in pack")
 	}
 	return packs, nil

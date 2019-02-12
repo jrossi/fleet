@@ -1081,7 +1081,7 @@ func TestUpdateHostIntervals(t *testing.T) {
 			}}`),
 			true,
 		},
-		// Kolide not managing distributed_interval
+		// Fleet not managing distributed_interval
 		{
 			kolide.Host{
 				ConfigTLSRefresh:    60,

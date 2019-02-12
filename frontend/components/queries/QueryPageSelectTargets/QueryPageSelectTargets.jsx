@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import campaignInterface from 'interfaces/campaign';
 import QueryProgressDetails from 'components/queries/QueryProgressDetails';
@@ -15,7 +16,6 @@ class QueryPageSelectTargets extends Component {
     onRunQuery: PropTypes.func.isRequired,
     onStopQuery: PropTypes.func.isRequired,
     onTargetSelect: PropTypes.func.isRequired,
-    query: PropTypes.string,
     queryIsRunning: PropTypes.bool,
     selectedTargets: PropTypes.arrayOf(targetInterface),
     targetsCount: PropTypes.number,
@@ -32,7 +32,6 @@ class QueryPageSelectTargets extends Component {
       campaign,
       onRunQuery,
       onStopQuery,
-      query,
       queryIsRunning,
       queryTimerMilliseconds,
     } = this.props;
@@ -43,7 +42,6 @@ class QueryPageSelectTargets extends Component {
           campaign={campaign}
           onRunQuery={onRunQuery}
           onStopQuery={onStopQuery}
-          query={query}
           queryIsRunning={queryIsRunning}
           queryTimerMilliseconds={queryTimerMilliseconds}
         />

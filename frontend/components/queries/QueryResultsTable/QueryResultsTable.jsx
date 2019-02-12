@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { keys, omit } from 'lodash';
 
@@ -22,7 +23,6 @@ class QueryResultsTable extends Component {
     isQueryShrinking: PropTypes.bool,
     onRunQuery: PropTypes.func.isRequired,
     onStopQuery: PropTypes.func.isRequired,
-    query: PropTypes.string,
     queryIsRunning: PropTypes.bool,
     queryTimerMilliseconds: PropTypes.number,
   };
@@ -148,7 +148,6 @@ class QueryResultsTable extends Component {
       onToggleQueryFullScreen,
       onRunQuery,
       onStopQuery,
-      query,
       queryIsRunning,
       queryTimerMilliseconds,
     } = this.props;
@@ -175,7 +174,6 @@ class QueryResultsTable extends Component {
             campaign={campaign}
             onRunQuery={onRunQuery}
             onStopQuery={onStopQuery}
-            query={query}
             queryIsRunning={queryIsRunning}
             className={`${baseClass}__full-screen`}
             queryTimerMilliseconds={queryTimerMilliseconds}

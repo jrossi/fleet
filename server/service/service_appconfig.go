@@ -61,7 +61,7 @@ func (svc service) SendTestEmail(ctx context.Context, config *kolide.AppConfig) 
 	}
 
 	testMail := kolide.Email{
-		Subject: "Hello from Kolide",
+		Subject: "Hello from Fleet",
 		To:      []string{vc.User.Email},
 		Mailer: &kolide.SMTPTestMailer{
 			KolideServerURL: config.KolideServerURL,
@@ -84,10 +84,15 @@ func (svc service) ModifyAppConfig(ctx context.Context, p kolide.AppConfigPayloa
 	config := appConfigFromAppConfigPayload(p, *oldAppConfig)
 
 	if p.SMTPSettings != nil {
-		if err = svc.SendTestEmail(ctx, config); err != nil {
-			return nil, err
+		enabled := p.SMTPSettings.SMTPEnabled
+		if (enabled == nil && oldAppConfig.SMTPConfigured) || (enabled != nil && *enabled) {
+			if err = svc.SendTestEmail(ctx, config); err != nil {
+				return nil, err
+			}
+			config.SMTPConfigured = true
+		} else if enabled != nil && !*enabled {
+			config.SMTPConfigured = false
 		}
-		config.SMTPConfigured = true
 	}
 
 	if err := svc.ds.SaveAppConfig(config); err != nil {
@@ -145,6 +150,8 @@ func appConfigFromAppConfigPayload(p kolide.AppConfigPayload, config kolide.AppC
 				config.SMTPAuthenticationMethod = kolide.AuthMethodCramMD5
 			case kolide.AuthMethodNamePlain:
 				config.SMTPAuthenticationMethod = kolide.AuthMethodPlain
+			case kolide.AuthMethodNameLogin:
+				config.SMTPAuthenticationMethod = kolide.AuthMethodLogin
 			default:
 				panic("unknown SMTP AuthMethod: " + *p.SMTPAuthenticationMethod)
 			}

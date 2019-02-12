@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { noop, size } from 'lodash';
 import { push } from 'react-router-redux';
@@ -102,11 +103,12 @@ export class ResetPasswordPage extends Component {
 
 const mapStateToProps = (state) => {
   const { ResetPasswordPage: componentState } = state.components;
-  const { user } = state.auth;
+  const { user, errors } = state.auth;
 
   return {
     ...componentState,
     user,
+    errors,
   };
 };
 

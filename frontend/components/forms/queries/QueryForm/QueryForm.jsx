@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { size } from 'lodash';
 
 import DropdownButton from 'components/buttons/DropdownButton';
@@ -40,10 +41,11 @@ class QueryForm extends Component {
       name: formFieldInterface.isRequired,
       query: formFieldInterface.isRequired,
     }).isRequired,
-    handleSubmit: PropTypes.func,
+    handleSubmit: PropTypes.func.isRequired,
     formData: queryInterface,
-    onOsqueryTableSelect: PropTypes.func,
-    onUpdate: PropTypes.func,
+    onOsqueryTableSelect: PropTypes.func.isRequired,
+    onRunQuery: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired,
     queryIsRunning: PropTypes.bool,
     title: PropTypes.string,
   };
@@ -136,7 +138,7 @@ class QueryForm extends Component {
   }
 
   render () {
-    const { baseError, fields, handleSubmit, queryIsRunning, title } = this.props;
+    const { baseError, fields, handleSubmit, onRunQuery, queryIsRunning, title } = this.props;
     const { errors } = this.state;
     const { onLoad, renderButtons } = this;
 
@@ -157,6 +159,7 @@ class QueryForm extends Component {
           onLoad={onLoad}
           readOnly={queryIsRunning}
           wrapperClassName={`${baseClass}__text-editor-wrapper`}
+          handleSubmit={onRunQuery}
         />
         <InputField
           {...fields.description}
@@ -171,6 +174,6 @@ class QueryForm extends Component {
 }
 
 export default Form(QueryForm, {
-  fields: ['description', 'name', 'platform', 'query'],
+  fields: ['description', 'name', 'query'],
   validate,
 });

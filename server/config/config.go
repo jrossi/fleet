@@ -52,7 +52,7 @@ const (
 	TLSProfileOld          = "old"
 )
 
-// ServerConfig defines configs related to the Kolide server
+// ServerConfig defines configs related to the Fleet server
 type ServerConfig struct {
 	Address    string
 	Cert       string
@@ -177,11 +177,11 @@ func (man Manager) addConfigs() {
 
 	// Server
 	man.addConfigString("server.address", "0.0.0.0:8080",
-		"Kolide server address (host:port)")
+		"Fleet server address (host:port)")
 	man.addConfigString("server.cert", "./tools/osquery/kolide.crt",
-		"Kolide TLS certificate path")
+		"Fleet TLS certificate path")
 	man.addConfigString("server.key", "./tools/osquery/kolide.key",
-		"Kolide TLS key path")
+		"Fleet TLS key path")
 	man.addConfigBool("server.tls", true,
 		"Enable TLS (required for osqueryd communication)")
 	man.addConfigString(TLSProfileKey, TLSProfileModern,
@@ -361,7 +361,7 @@ func flagNameFromConfigKey(key string) string {
 	return strings.Replace(key, ".", "_", -1)
 }
 
-// Manager manages the addition and retrieval of config values for Kolide
+// Manager manages the addition and retrieval of config values for Fleet
 // configs. It's only public API method is LoadConfig, which will return the
 // populated KolideConfig struct.
 type Manager struct {

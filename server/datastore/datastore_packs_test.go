@@ -265,6 +265,32 @@ func testApplyPackSpecMissingQueries(t *testing.T, ds kolide.Datastore) {
 	}
 }
 
+func testApplyPackSpecMissingName(t *testing.T, ds kolide.Datastore) {
+	setupPackSpecsTest(t, ds)
+
+	specs := []*kolide.PackSpec{
+		&kolide.PackSpec{
+			Name: "test2",
+			Targets: kolide.PackSpecTargets{
+				Labels: []string{},
+			},
+			Queries: []kolide.PackSpecQuery{
+				kolide.PackSpecQuery{
+					QueryName: "foo",
+					Interval:  600,
+				},
+			},
+		},
+	}
+	err := ds.ApplyPackSpecs(specs)
+	require.NoError(t, err)
+
+	// Query name should have been copied into name field
+	spec, err := ds.GetPackSpec("test2")
+	require.NoError(t, err)
+	assert.Equal(t, "foo", spec.Queries[0].Name)
+}
+
 func testListLabelsForPack(t *testing.T, ds kolide.Datastore) {
 	labelSpecs := []*kolide.LabelSpec{
 		&kolide.LabelSpec{
@@ -432,4 +458,40 @@ func testListPacksForHost(t *testing.T, ds kolide.Datastore) {
 	if assert.Len(t, packs, 1) {
 		assert.Equal(t, "foo_pack", packs[0].Name)
 	}
+
+	// Add host directly to pack
+	err = ds.AddHostToPack(h1.ID, p2.ID)
+	require.Nil(t, err)
+
+	packs, err = ds.ListPacksForHost(h1.ID)
+	require.Nil(t, err)
+	assert.Len(t, packs, 2)
+
+	// Remove label membership for both
+	err = ds.RecordLabelQueryExecutions(
+		h1,
+		map[uint]bool{l2.ID: false, l1.ID: false},
+		mockClock.Now(),
+	)
+	require.Nil(t, err)
+
+	err = ds.RecordLabelQueryExecutions(
+		h1,
+		map[uint]bool{l2.ID: false},
+		mockClock.Now(),
+	)
+	require.Nil(t, err)
+	packs, err = ds.ListPacksForHost(h1.ID)
+	require.Nil(t, err)
+	if assert.Len(t, packs, 1) {
+		assert.Equal(t, p2.Name, packs[0].Name)
+	}
+
+	// Now host is added directly to both packs
+	err = ds.AddHostToPack(h1.ID, p1.ID)
+	require.Nil(t, err)
+
+	packs, err = ds.ListPacksForHost(h1.ID)
+	require.Nil(t, err)
+	assert.Len(t, packs, 2)
 }

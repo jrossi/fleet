@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import Icon from 'components/icons/Icon';
@@ -52,8 +53,8 @@ class TargetOption extends Component {
       renderTargetDetail,
     } = this;
     const wrapperClassName = classnames(`${baseClass}__wrapper`, {
-      '--is-label': targetType === 'labels',
-      '--is-host': targetType === 'hosts',
+      'is-label': targetType === 'labels',
+      'is-host': targetType === 'hosts',
     });
 
     return (

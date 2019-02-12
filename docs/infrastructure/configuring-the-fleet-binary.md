@@ -56,7 +56,8 @@ $ /usr/bin/fleet serve \
   --redis_address=127.0.0.1:6379 \
   --server_cert=/tmp/server.cert \
   --server_key=/tmp/server.key \
-  --logging_json
+  --logging_json \
+  --auth_jwt_key=changeme
 ```
 
 #### Using only environment variables
@@ -70,6 +71,7 @@ $ KOLIDE_MYSQL_ADDRESS=127.0.0.1:3306 \
   KOLIDE_SERVER_CERT=/tmp/server.cert \
   KOLIDE_SERVER_KEY=/tmp/server.key \
   KOLIDE_LOGGING_JSON=true \
+  KOLIDE_AUTH_JWT_KEY=changeme \
   /usr/bin/fleet serve
 ```
 
@@ -89,6 +91,8 @@ server:
   key: /tmp/server.key
 logging:
   json: true
+auth:
+  jwt_key: changeme
 ' > /tmp/kolide.yml
 $ fleet serve --config /tmp/kolide.yml
 ```
@@ -224,6 +228,32 @@ The server name or IP address used by the client certificate.
 		servername: 127.0.0.1
 	```
 
+##### `mysql_max_open_conns`
+
+Maximum open connections to database
+
+- Default value: 50
+- Environment variable: `KOLIDE_MYSQL_MAX_OPEN_CONNS`
+- Config file format:
+
+	```
+	mysql:
+		max_open_conns: 50
+	```
+
+##### `mysql_max_idle_conns`
+
+Maximum idle connections to database. This value should be equal to or less than `mysql_max_open_conns`
+
+- Default value: 50
+- Environment variable: `KOLIDE_MYSQL_MAX_IDLE_CONNS`
+- Config file format:
+
+	```
+	mysql:
+		max_idle_conns: 50
+	```
+
 #### Redis
 
 ##### `redis_address`
@@ -256,7 +286,7 @@ The password to use when connecting to the Redis instance.
 
 ##### `server_address`
 
-The address to serve the Kolide webserver.
+The address to serve the Fleet webserver.
 
 - Default value: `0.0.0.0:8080`
 - Environment variable: `KOLIDE_SERVER_ADDRESS`
@@ -307,6 +337,20 @@ Whether or not the server should be served over TLS.
 	server:
 		tls: false
 	```
+
+##### `server_tls_compatibility`
+
+Configures the TLS settings for compatibility with various user agents. Options are `modern`, `intermediate`, and `old`. These correspond to the compatibility levels [defined by the Mozilla OpSec team](https://wiki.mozilla.org/Security/Server_Side_TLS)
+
+- Default value: `modern`
+- Environment variable: `KOLIDE_SERVER_TLS_COMPATIBILITY`
+- Config file format:
+
+	```
+	server:
+		tls_compatibility: intermediate
+	```
+
 
 #### Auth
 

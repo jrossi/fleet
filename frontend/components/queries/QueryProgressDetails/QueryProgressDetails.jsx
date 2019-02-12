@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
 import Button from 'components/buttons/Button';
@@ -8,11 +9,7 @@ import Timer from 'components/loaders/Timer';
 
 const baseClass = 'query-progress-details';
 
-const QueryProgressDetails = ({ campaign, className, onRunQuery, onStopQuery, query, queryIsRunning, queryTimerMilliseconds }) => {
-  const handleRunQuery = () => {
-    return onRunQuery(query);
-  };
-
+const QueryProgressDetails = ({ campaign, className, onRunQuery, onStopQuery, queryIsRunning, queryTimerMilliseconds }) => {
   const { hosts_count: hostsCount } = campaign;
   const totalHostsCount = get(campaign, ['totals', 'count'], 0);
   const totalRowsCount = get(campaign, ['query_results', 'length'], 0);
@@ -21,7 +18,7 @@ const QueryProgressDetails = ({ campaign, className, onRunQuery, onStopQuery, qu
     <div className={`${baseClass}__btn-wrapper`}>
       <Button
         className={`${baseClass}__run-btn`}
-        onClick={handleRunQuery}
+        onClick={onRunQuery}
         variant="success"
       >
         Run
@@ -76,7 +73,6 @@ QueryProgressDetails.propTypes = {
   className: PropTypes.string,
   onRunQuery: PropTypes.func.isRequired,
   onStopQuery: PropTypes.func.isRequired,
-  query: PropTypes.string,
   queryIsRunning: PropTypes.bool,
   queryTimerMilliseconds: PropTypes.number,
 };

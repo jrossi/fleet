@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const baseClass = 'auth-form-wrapper';
 
@@ -12,7 +13,7 @@ class AuthenticationFormWrapper extends Component {
 
     return (
       <div className={baseClass}>
-        <img alt="Kolide text logo" src="/assets/images/kolide-logo-text.svg" className={`${baseClass}__logo`} />
+        <img alt="Kolide Fleet" src="/assets/images/kolide-logo-vertical.svg" className={`${baseClass}__logo`} />
         {children}
       </div>
     );

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { size } from 'lodash';
 
@@ -62,7 +63,7 @@ class AppSettingsPage extends Component {
       return false;
     }
 
-    const formData = { ...appConfig };
+    const formData = { ...appConfig, enable_smtp: smtpConfigured };
 
     return (
       <div className={`${baseClass} body-wrap`}>

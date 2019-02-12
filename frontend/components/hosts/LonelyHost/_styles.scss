@@ -1,5 +1,5 @@
 .lonely-host {
-  @include display(flex);
+  display: flex;
   padding: 16px 8px;
 
   &__add-host-btn {
@@ -51,7 +51,7 @@
     h1 {
       font-size: 28px;
       font-weight: $normal;
-      color: #48c586;
+      color: #27d77e;
       padding-left: 5px;
     }
 

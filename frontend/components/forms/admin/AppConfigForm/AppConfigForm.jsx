@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Button from 'components/buttons/Button';
 import Checkbox from 'components/forms/fields/Checkbox';
@@ -14,6 +15,7 @@ import validate from 'components/forms/admin/AppConfigForm/validate';
 const authMethodOptions = [
   { label: 'Plain', value: 'authmethod_plain' },
   { label: 'Cram MD5', value: 'authmethod_cram_md5' },
+  { label: 'Login', value: 'authmethod_login' },
 ];
 const authTypeOptions = [
   { label: 'Username and Password', value: 'authtype_username_password' },
@@ -24,7 +26,7 @@ const formFields = [
   'authentication_method', 'authentication_type', 'domain', 'enable_ssl_tls', 'enable_start_tls',
   'kolide_server_url', 'org_logo_url', 'org_name', 'osquery_enroll_secret', 'password',
   'port', 'sender_address', 'server', 'user_name', 'verify_ssl_certs', 'idp_name', 'entity_id',
-  'issuer_uri', 'idp_image_url', 'metadata', 'metadata_url', 'enable_sso',
+  'issuer_uri', 'idp_image_url', 'metadata', 'metadata_url', 'enable_sso', 'enable_smtp',
 ];
 const Header = ({ showAdvancedOptions }) => {
   const CaratIcon = <Icon name={showAdvancedOptions ? 'downcarat' : 'upcarat'} />;
@@ -58,6 +60,7 @@ class AppConfigForm extends Component {
       metadata_url: formFieldInterface.isRequired,
       idp_name: formFieldInterface.isRequired,
       enable_sso: formFieldInterface.isRequired,
+      enable_smtp: formFieldInterface.isRequired,
     }).isRequired,
     handleSubmit: PropTypes.func.isRequired,
     smtpConfigured: PropTypes.bool.isRequired,
@@ -169,22 +172,31 @@ class AppConfigForm extends Component {
           </div>
         </div>
         <div className={`${baseClass}__section`}>
-          <h2>Kolide Web Address</h2>
+          <h2>Fleet Web Address</h2>
           <div className={`${baseClass}__inputs`}>
             <InputField
               {...fields.kolide_server_url}
-              label="Kolide App URL"
+              label="Fleet App URL"
               hint={<span>Include base path only (eg. no <code>/v1</code>)</span>}
             />
           </div>
           <div className={`${baseClass}__details`}>
-            <p>What base URL should <strong>osqueryd</strong> clients use to connect and register with <strong>Kolide</strong>?</p>
-            <p className={`${baseClass}__note`}><strong>Note:</strong> Please ensure the URL you choose is accessible to all endpoints that need to communicate with Kolide, otherwise they will not be able to correctly register.</p>
+            <p>What base URL should <strong>osqueryd</strong> clients use to connect and register with <strong>Fleet</strong>?</p>
+            <p className={`${baseClass}__note`}><strong>Note:</strong> Please ensure the URL you choose is accessible to all endpoints that need to communicate with Fleet, otherwise they will not be able to correctly register.</p>
           </div>
         </div>
 
         <div className={`${baseClass}__section`}>
           <h2>SAML Single Sign On Options</h2>
+
+          <div className={`${baseClass}__inputs`}>
+            <Checkbox
+              {...fields.enable_sso}
+            >
+              Enable Single Sign On
+            </Checkbox>
+          </div>
+
           <div className={`${baseClass}__inputs`}>
             <InputField
               {...fields.idp_name}
@@ -203,7 +215,7 @@ class AppConfigForm extends Component {
             />
           </div>
           <div className={`${baseClass}__details`}>
-            <p>The required entity ID is a URI that you use to identify <strong>Kolide</strong> when configuring the identity provider.</p>
+            <p>The required entity ID is a URI that you use to identify <strong>Fleet</strong> when configuring the identity provider.</p>
           </div>
 
           <div className={`${baseClass}__inputs`}>
@@ -248,18 +260,18 @@ class AppConfigForm extends Component {
             <p>A URL that references the identity provider metadata.</p>
           </div>
 
-          <div className={`${baseClass}__inputs`}>
-            <Checkbox
-              {...fields.enable_sso}
-            >
-              Enable Single Sign On
-            </Checkbox>
-          </div>
-
         </div>
 
         <div className={`${baseClass}__section`}>
           <h2>SMTP Options <small className={`smtp-options smtp-options--${smtpConfigured ? 'configured' : 'notconfigured'}`}>STATUS: <em>{smtpConfigured ? 'CONFIGURED' : 'NOT CONFIGURED'}</em></small></h2>
+          <div className={`${baseClass}__inputs`}>
+            <Checkbox
+              {...fields.enable_smtp}
+            >
+              Enable SMTP
+            </Checkbox>
+          </div>
+
           <div className={`${baseClass}__inputs`}>
             <InputField
               {...fields.sender_address}
@@ -267,7 +279,7 @@ class AppConfigForm extends Component {
             />
           </div>
           <div className={`${baseClass}__details`}>
-            <p>The address email recipients will see all messages that are sent from the <strong>Kolide</strong> application.</p>
+            <p>The address email recipients will see all messages that are sent from the <strong>Fleet</strong> application.</p>
           </div>
           <div className={`${baseClass}__inputs ${baseClass}__inputs--smtp`}>
             <InputField
@@ -282,7 +294,7 @@ class AppConfigForm extends Component {
             <Checkbox
               {...fields.enable_ssl_tls}
             >
-              User SSL/TLS to connect (recommended)
+              Use SSL/TLS to connect (recommended)
             </Checkbox>
           </div>
           <div className={`${baseClass}__details`}>
@@ -306,7 +318,7 @@ class AppConfigForm extends Component {
           <h2>Osquery Enrollment Secret</h2>
           <div className={`${baseClass}__inputs`}>
             <p className={`${baseClass}__enroll-secret-label`}>
-              This is the secret that you use to enroll osquery agents with Kolide:
+              This is the secret that you use to enroll osquery agents with Fleet:
               <Button variant="unstyled" onClick={onToggleRevealSecret}>Reveal Secret</Button>
             </p>
             <InputField

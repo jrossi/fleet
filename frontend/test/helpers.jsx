@@ -9,7 +9,7 @@ import authMiddleware from 'redux/middlewares/auth';
 import redirectMiddleware from 'redux/middlewares/redirect';
 
 export const fillInFormInput = (inputComponent, value) => {
-  return inputComponent.simulate('change', { target: { value } });
+  return inputComponent.hostNodes().first().simulate('change', { target: { value } });
 };
 
 export const reduxMockStore = (store = {}) => {
@@ -30,16 +30,15 @@ export const connectedComponent = (ComponentClass, options = {}) => {
 };
 
 export const itBehavesLikeAFormDropdownElement = (form, inputName) => {
-  const dropdownField = form.find('Select').findWhere(s => s.prop('name') === `${inputName}-select`);
+  const dropdownField = form.find(`Select[name="${inputName}-select"]`);
 
   expect(dropdownField.length).toEqual(1);
 
-  const inputNode = dropdownField.find('input');
-
   const options = dropdownField.prop('options');
 
-  fillInFormInput(inputNode, options[0].label);
-  dropdownField.find('.Select-option').first().simulate('mousedown');
+  // Arrow down, then enter to select the first item
+  dropdownField.find('.Select-control').simulate('keyDown', { keyCode: 40 });
+  dropdownField.find('.Select-control').simulate('keyDown', { keyCode: 13 });
 
   expect(form.state().formData).toInclude({ [inputName]: options[0].value });
 };
@@ -66,21 +65,31 @@ export const itBehavesLikeAFormInputElement = (form, inputName, inputType = 'Inp
 export const createAceSpy = () => {
   return spyOn(global.window.ace, 'edit').andReturn({
     $options: {},
+    commands: {
+      addCommand: noop,
+    },
     getValue: () => { return 'Hello world'; },
     getSession: () => {
       return {
         getMarkers: noop,
+        selection: {
+          on: noop,
+        },
         setAnnotations: noop,
         setMode: noop,
         setUseWrapMode: noop,
+        setValue: noop,
       };
     },
     handleOptions: noop,
     handleMarkers: noop,
+    navigateFileEnd: noop,
     on: noop,
     renderer: {
       setShowGutter: noop,
+      setScrollMargin: noop,
     },
+    resize: noop,
     session: {
       on: noop,
       selection: {
@@ -132,4 +141,3 @@ export default {
   reduxMockStore,
   stubbedOsqueryTable,
 };
-
